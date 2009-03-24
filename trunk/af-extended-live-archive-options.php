@@ -11,11 +11,12 @@ include_once(ABSPATH . WPINC . '/class-snoopy.php');
 $af_ela_cache_root = dirname(__FILE__) . '/cache/';
 
 function af_ela_info($show='') {
+    global $ela_plugin_basename;
 	switch($show) {
 	case 'currentversion' :
 		$plugins= get_plugins();
-    	$info = $plugins['af-extended-live-archive/af-extended-live-archive.php']['Version'];
-    	break;
+    	$info = $plugins[$ela_plugin_basename]['Version'];
+        break;
     case 'localeversion' :
     	$info = '9918';
     	break;
@@ -46,9 +47,10 @@ function af_ela_info($show='') {
 
 function af_ela_option_init($reset = false) {
 	global $af_ela_cache_root;
-	if (!$reset) $settings = get_option('af_ela_options');
-	
-	if (!($is_initialized=get_option('af_ela_is_initialized'))
+	if (!$reset) $settings = get_option('af_ela_options');	
+    $is_initialized = get_option('af_ela_is_initialized');
+    //var_dump($is_initialized, $settings);
+	if (!$is_initialized
 			|| empty($settings)
 			|| strstr(trim(af_ela_info('currentversion')), trim($is_initialized)) === false
 			|| strstr(trim($settings['installed_version']), trim($is_initialized)) === false
@@ -118,7 +120,8 @@ function af_ela_option_init($reset = false) {
 		
 		$res = true;
 		if( !is_dir($af_ela_cache_root) ) {
-			if( !($res = af_ela_create_cache_dir()) ) {
+            $res = af_ela_create_cache_dir();
+			if( !$res ) {
 				?>
 		<div class="updated"><p><strong>Unable to create cache directory. Check your server credentials on the wp-content directory.</strong></p></div>
 	<?php		return;
@@ -256,8 +259,8 @@ function af_ela_admin_page() {
 		echo '<div id="message" class="updated fade"><p><a href="'. af_ela_info('homeurl').'" title="'.af_ela_info('homename').'">There is a ELA update available</a></p></div>';
 	}
 	
-	if (isset($_POST['submit_option'])) { 
-		if (isset($_POST['clear_cache'])) {
+	if (isset($_POST['ela_submit_option'])) {
+		if (isset($_POST['ela_clear_cache'])) {
 			$cache = new af_ela_classCacheFile('');
 			$reset_return= $cache->deleteFile();
 			if ($reset_return) {
@@ -301,7 +304,7 @@ function af_ela_admin_page() {
 		<h2>ELA Options</h2><?php
 	af_ela_echo_fieldset_info($option_mode_text,$advancedState);
 ?>		<form method="post">
-		<input type="hidden" name="submit_option" value="1" /><?php
+		<input type="hidden" name="ela_submit_option" value="1" /><?php
 	af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode);
 ?>		<hr style="clear: both; border: none;" /><?php
 	af_ela_echo_fieldset_howtoshow($settings,$advancedState);
@@ -319,10 +322,10 @@ function af_ela_admin_page() {
 	<div class="wrap">
 		<h2>ELA Cache Management</h2>
 		<form method="post">
-		<input type="hidden" name="submit_option" value="1" />
+		<input type="hidden" name="ela_submit_option" value="1" />
 		<p>You need to clear the cache so that it gets re-built whenever you are making changes related to a category without editing or creating a post (like renaming, creating, deleting a category for instance</p>
 		<div class="submit">
-			<input type="submit" name="clear_cache" value="<?php _e('Empty Cache Now') ?>" />
+			<input type="submit" name="ela_clear_cache" value="<?php _e('Empty Cache Now') ?>" />
 		</div>
 		</form>
 	</div>
@@ -435,11 +438,11 @@ function af_ela_echo_fieldset_info($option_mode_text,$advancedState) {
 		</table> 
 		<div class="submit" style="text-align:center; ">
 		<form method="post"><br />
-		<input type="hidden" name="submit_option" value="1" /><input type="submit" name="switch_option_mode" value="<?php _e($option_mode_text) ?>" /></form></div>
+		<input type="hidden" name="ela_submit_option" value="1" /><input type="submit" name="switch_option_mode" value="<?php _e($option_mode_text) ?>" /></form></div>
 		
 		<div class="submit" style="text-align:center;display: <?php echo $advancedState; ?> ">
 		<form method="post"><br />
-		<input type="hidden" name="submit_option" value="1" /><input type="submit" name="reset_option" value="<?php echo "Reset options to default" ?>" /></form></div>
+		<input type="hidden" name="ela_submit_option" value="1" /><input type="submit" name="reset_option" value="<?php echo "Reset options to default" ?>" /></form></div>
 		<tr valign="top" >
 
 		</tr>
@@ -699,7 +702,13 @@ function af_ela_echo_fieldset_whatcategoriestoshow($settings,$advancedState) {
 			global $wpdb;
 			$asides_table = array();
 			$asides_table = explode(',', $settings['excluded_categories']);
-			$asides_cats = $wpdb->get_results("SELECT * from $wpdb->categories");
+            $query = "SELECT t.term_id AS `cat_ID`, t.name AS `cat_name`
+                      FROM $wpdb->terms AS t
+                      INNER JOIN {$wpdb->term_taxonomy} AS tt
+                            ON (t.term_id = tt.term_id)
+                      WHERE tt.taxonomy = 'category'
+            ";
+			$asides_cats = $wpdb->get_results($query);
 			$asides_content = '<table width="100%" cellspacing="2" cellpadding="5" class="editform">';
 			$asides_select = '';
 			foreach ($asides_cats as $cat) {
@@ -742,5 +751,5 @@ function af_ela_echo_fieldset_whataboutthepagedposts($settings,$advancedState) {
 <?php
 }
 
-af_ela_admin_page();
+//af_ela_admin_page();
 ?>

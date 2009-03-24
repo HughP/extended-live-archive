@@ -14,9 +14,19 @@
 // +----------------------------------------------------------------------+
 */
 
+if (!defined('WP_PLUGIN_DIR')){
+    define('WP_PLUGIN_DIR', ABSPATH . 'wp-content/plugins');
+}
+
+if (!defined('WP_PLUGIN_URL')){
+    define('WP_PLUGIN_URL',get_option('siteurl') . '/wp-content/plugins');
+}
+
 $af_ela_cache_root = dirname(__FILE__) . '/cache/';
 $debug = false;
 $utw_is_present = false;
+$ela_plugin_basename = plugin_basename(__FILE__);
+
 
 if (file_exists(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php') && in_array('UltimateTagWarrior/ultimate-tag-warrior.php', get_option('active_plugins'))) {
 	@require_once(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php');
@@ -83,7 +93,7 @@ function af_ela_super_archive($arguments = '') {
 	}
 	
 	$year = date('Y');
-	$plugin_path = get_settings('siteurl') . '/wp-content/plugins/af-extended-live-archive';
+	$plugin_path = WP_PLUGIN_URL . '/af-extended-live-archive';
 	
 
 	$text .= <<<TEXT
@@ -102,7 +112,7 @@ TEXT;
 function af_ela_header() {
 	// loading stuff
 	$settings = get_option('af_ela_options');
-	$plugin_path = get_settings('siteurl') . '/wp-content/plugins/af-extended-live-archive';
+	$plugin_path = WP_PLUGIN_URL . '/af-extended-live-archive';
 	if ($settings['use_default_style']) {
 		if (file_exists(ABSPATH . 'wp-content/themes/' . get_template() . '/ela.css')) {
 			$csspath = get_bloginfo('template_url')."/ela.css";
@@ -269,8 +279,9 @@ function af_ela_set_config($config, $reset=false) {
 /***************************************
  * bound admin page.
  **************************************/
+include_once('af-extended-live-archive-options.php');
 function af_ela_admin_pages() {
-	if (function_exists('add_options_page')) add_options_page('Ext. Live Archive Options', 'Ext. Live Archive', 9, get_settings('siteurl') . '/wp-content/plugins/af-extended-live-archive/af-extended-live-archive-options.php');
+	if (function_exists('add_options_page')) add_options_page('Ext. Live Archive Options', 'Ext. Live Archive', 9, 'extended-live-archive','af_ela_admin_page');
 }
 
 
