@@ -21,22 +21,22 @@ function af_ela_info($show='') {
     	$info = '9918';
     	break;
     case 'born_on' :
-    	$info = 'June 22, 2006';
+    	$info = 'June 22, 2006'; //This is my birthday. ^-^
     	break;
     case 'homeurl' :
-    	$info = 'http://www.sonsofskadi.net/extended-live-archive/';
+    	$info = 'http://extended-live-archive.googlecode.com';
     	break;
 	case 'homename' :
-    	$info = 'ELA on Sons Of Skadi';
+    	$info = 'GoogleCode:Extended-Live-Archive';
     	break;
 	case 'supporturl' :
-    	$info = 'http://www.flickr.com/groups/ela-support/discuss/';
+    	$info = 'http://code.google.com/p/extended-live-archive/issues/list';
     	break;
 	case 'supportname' :
-    	$info = 'ELA support group on Flickr';
+    	$info = 'Google code issue.';
     	break; 
     case 'remoteversion':
-    	$info = 'http://www.sonsofskadi.net/elaversion.txt';
+    	$info = 'http://sexywp.com/contact';
      	break;
      default:
      	$info = '';
@@ -422,17 +422,17 @@ function af_ela_echo_fieldset_info($option_mode_text,$advancedState) {
 			</tr>
 			<tr>
 				<th width="33%" valign="top" scope="row"><label>Works great with:</label></th>
-				<td><a href="http://binarybonsai.com/k2/">Michael's K2</a> and a sh*load of other themes...
-				<br/><a href="http://photomatt.net/2004/05/19/asides/">Matt's Asides</a>
-				<br/><a href="http://www.neato.co.nz/ultimate-tag-warrior">Christine's Utimate Tag Warrior</a></td>
+				<td>WP 2.7</td>
 			</tr>
 			<tr>
 				<th width="33%" valign="top" scope="row"><label>Feel absolutly free to </label></th>
-				<td><form  action="https://www.paypal.com/cgi-bin/webscr" method="post">
-					<input type="hidden" name="cmd" value="_s-xclick"/>
-					<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!"/>
-					<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIH8QYJKoZIhvcNAQcEoIIH4jCCB94CAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYBmTiBrGDGDUePWZj6mcZVyQ88Ok0E3faq5jQ1N39pvq9Hy3pAddw0S5p8ujZIA6qLjFTT0zAUc2wfSUXVtAOkf6jGUW8lsyVgUHqhInRgjSm6N3vtzE+Gj6amTi15KIX09xezrlHaWbx4QqZOH1A/OKHb8aFDJsA/y0WyblBQ+rzELMAkGBSsOAwIaBQAwggFtBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECPv40xnzNoGKgIIBSDm7JRzjoiWIUbkU2JrIfdMLXz3669c2U8TFcs5lUJB3OloRD/ZVTAMmfvxZswpG35LrHs4JqhuWB6j4ylZ1yLf8H/TVIhE3XLwCKAxNc6S4vrTLLDaALTyuZZCKQG+fJw+CMgg4eDEm66uu2JCgQld3ffY1IUAfeP+m75qemesUQuZs5R+60WYNVVtGwgn1cmdaAj95Fy9L58M5biNmvAmQXj5kRfv501q5bkCsq3tJ7lfqBDTrVnx/Ph2Xp6ZG2G2vRhkRZmBX/WbJIkYf/qNzGn8d+T3r+09DjuP1pEyqnnD67uv4g+iZrjRP2L/Z1FWV+dfzJQ4BeDm5PJ0xve45Bz6BWgI7iP6CzPpXGCemvm9JZ8iaXhrkINrMlgQOBNUvHTDelyR/QKdhkRRPDkgPe5cYmkXnEdAPetdJl6CjsxVoqht9NLegggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEzMTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALScsTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNpJeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgeswHQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaffLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK//Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiSojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIBmjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNTEyMzExNzU1NDVaMCMGCSqGSIb3DQEJBDEWBBR5zGOVdRzLIwgs54bPWS2CsEEnJjANBgkqhkiG9w0BAQEFAASBgCHhs0ak4BB1Aws+/ulLURrSX4PakrT3ygcok8Dz81Jiugal07+Okj+xEsP4GvY7YSHet6EPsR9Isr+R7duCou/Bs6azSdLBPKI2dZAXU6NAF2fWK4XqX6TBBvQu773EQRAYbB86wtBMzrszep1UNt3A2Q2N0+Vkz1BtykpTMfU6-----END PKCS7-----"/>
-					</form>
+				<td>
+                    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+                    <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                    <img alt="" border="0" src="https://www.paypal.com/zh_XC/i/scr/pixel.gif" width="1" height="1">
+                    </form>
 				</td>
 			</tr>
 		</table> 

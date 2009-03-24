@@ -1,12 +1,21 @@
 <?php 
 /* 
  Plugin Name: Extended Live Archives 
- Plugin URI: http://www.sonsofskadi.net/extended-live-archive/
- Description: Implements a dynamic archive, inspired by <a href="http://binarybonsai.com/archives/2004/11/21/freya-dissection/#livearchives">Binary Bonsai</a> and the original <a href="http://www.jonas.rabbe.com/archives/2005/05/08/super-archives-plugin-for-wordpress/">Super Archives by Jonas Rabbe</a>. Visit <a href="options-general.php?page=af-extended-live-archive/af-extended-live-archive-options.php">the ELA option panel</a> to initialize the plugin.
- Version: 0.10beta-r18
- Author: Arnaud Froment
- Author URI: http://www.sonsofskadi.net/ 
+ Plugin URI: http://extended-live-archive.googlecode.com/
+ Description: The famous ELA for WP 2.7.
+ Version: 0.2alpha
+ Author: Charles
+ Author URI: http://sexywp.com
  */
+/*
+ PName: Extended Live Archives
+ PURI: http://www.sonsofskadi.net/extended-live-archive/
+ Descript: Implements a dynamic archive, inspired by <a href="http://binarybonsai.com/archives/2004/11/21/freya-dissection/#livearchives">Binary Bonsai</a> and the original <a href="http://www.jonas.rabbe.com/archives/2005/05/08/super-archives-plugin-for-wordpress/">Super Archives by Jonas Rabbe</a>. Visit <a href="options-general.php?page=af-extended-live-archive/af-extended-live-archive-options.php">the ELA option panel</a> to initialize the plugin.
+ Ver: 0.10beta-r18
+ OriginAuthor: Arnaud Froment
+ OriginAuthorURI: http://www.sonsofskadi.net/
+ */
+
 /*
 // +----------------------------------------------------------------------+
 // | Licenses and copyright acknowledgements are located at               |
