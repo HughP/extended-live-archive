@@ -58,7 +58,7 @@ class af_ela_classGenerator {
 	function af_ela_classGenerator() {
 		global $utw_is_present;
 		$this->cache = new af_ela_classCacheFile('');
-		if($utw_is_present) $this->utwCore = new UltimateTagWarriorCore;
+		//if($utw_is_present) $this->utwCore = new UltimateTagWarriorCore;
 		return true;
 	}
 	/* ***********************************
@@ -66,7 +66,7 @@ class af_ela_classGenerator {
 	 * 		updated post.
 	 * ***********************************/	
 	function buildPostToGenerateTable($exclude, $id, $commentId = false) {
-		global $wpdb, $tabletags, $tablepost2tag, $utw_is_present;
+		global $wpdb;//, $tabletags, $tablepost2tag, $utw_is_present;
 		
 		if (!empty($exclude)) {
 			$excats = preg_split('/[\s,]+/',$exclude);
@@ -80,7 +80,9 @@ class af_ela_classGenerator {
 		if(!$commentId) {
 			if($id) { 
 				$dojustid = ' AND ID = ' . intval($id) . ' ' ;
+                $dojustid2 = ' AND tr.object_id = ' . intval($id) . ' ' ;
 			}
+
 
 			$query = "SELECT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, tt.term_id AS `category_id`
 				FROM $wpdb->posts 
@@ -105,13 +107,22 @@ class af_ela_classGenerator {
 			
 			// For UTW
 			if($utw_is_present) {
-				$query = "SELECT tag_id
-					FROM $wpdb->posts 
-					INNER JOIN $wpdb->post2cat ON ($wpdb->posts.ID = $wpdb->post2cat.post_id)
-					INNER JOIN $tablepost2tag ON ($wpdb->posts.ID = $tablepost2tag.post_id) 
-					WHERE post_date > 0
-					$exclusions $dojustid
-					ORDER By post_date DESC";				
+//				$query = "SELECT tag_id
+//					FROM $wpdb->posts
+//					INNER JOIN $wpdb->post2cat ON ($wpdb->posts.ID = $wpdb->post2cat.post_id)
+//					INNER JOIN $tablepost2tag ON ($wpdb->posts.ID = $tablepost2tag.post_id)
+//					WHERE post_date > 0
+//					$exclusions $dojustid
+//					ORDER By post_date DESC";
+                $query = "SELECT t.term_id AS `tag_id`
+                          FROM $wpdb->terms AS t
+                          INNER JOIN $wpdb->term_taxonomy AS tt
+                                ON (t.term_id = tt.term_id)
+                          INNER JOIN $wpdb->term_relationships AS tr
+                                ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+                          WHERE tt.taxonomy = 'post_tag'
+                          $dojustid2
+                        ";
 				$results = $wpdb->get_results($query);
                 logthis("SQL Query :"."Result Count:" . count($results).$query, __FUNCTION__, __LINE__);
 				if ($results) {
@@ -582,7 +593,7 @@ class af_ela_classGenerator {
 	function buildTagsTable($exclude='', $id = false, $order = false, $orderparam = 0) {
 		global $utw_is_present;
 		if($utw_is_present) {
-			global $wpdb, $tabletags, $tablepost2tag;
+			global $wpdb;//, $tabletags, $tablepost2tag;
 			
 			if (!empty($exclude)) {
 				$excats = preg_split('/[\s,]+/',$exclude);
@@ -595,10 +606,10 @@ class af_ela_classGenerator {
 					
 			switch($order) {
 				case 2: // X is the min number of post per tag
-				$ordering = "HAVING tag_count >= ". $orderparam . " ORDER BY tag_count DESC";
+				$ordering = "HAVING tt.count >= ". $orderparam . " ORDER BY tt.count DESC";
 				break;
 				case 1: // X is the number of tag to show
-				$ordering = "ORDER BY tag_count DESC LIMIT ". $orderparam;
+				$ordering = "ORDER BY tt.count DESC LIMIT ". $orderparam;
 				break;
 				case 0:
 				default:
@@ -608,18 +619,26 @@ class af_ela_classGenerator {
 			
 			$now = current_time('mysql', 1);
 
-			$query = "SELECT t.tag_id, t.tag, count(distinct p2t.post_id) as tag_count
-				FROM $tabletags t 
-				INNER JOIN $tablepost2tag p2t ON t.tag_id = p2t.tag_id
-				INNER JOIN $wpdb->posts p ON p2t.post_id = p.ID
-				INNER JOIN $wpdb->post2cat p2c ON p2t.post_id = p2c.post_ID
-				WHERE p.post_date_gmt < '$now'
-				AND p.post_status = 'publish'
-				$exclusions
-				GROUP BY t.tag
-				$ordering";
-			logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
+//			$query = "SELECT t.tag_id, t.tag, count(distinct p2t.post_id) as tag_count
+//				FROM $tabletags t
+//				INNER JOIN $tablepost2tag p2t ON t.tag_id = p2t.tag_id
+//				INNER JOIN $wpdb->posts p ON p2t.post_id = p.ID
+//				INNER JOIN $wpdb->post2cat p2c ON p2t.post_id = p2c.post_ID
+//				WHERE p.post_date_gmt < '$now'
+//				AND p.post_status = 'publish'
+//				$exclusions
+//				GROUP BY t.tag
+//				$ordering";
+            $query = "SELECT t.term_id AS `tag_id`, t.name AS `tag`, tt.count AS tag_count
+                      FROM $wpdb->terms AS t
+                      INNER JOIN $wpdb->term_taxonomy AS tt
+                            ON (t.term_id = tt.term_id)
+                      WHERE tt.taxonomy = 'post_tag'
+                      $ordering
+                      ";
+
 			$tagsSet = $wpdb->get_results($query);
+			logthis("SQL Query :Tag Sets:". count($tagsSet) .$query, __FUNCTION__, __LINE__);
 			$tagged_posts = 0;
 			$posted_tags = 0;
 			if( !empty($tagsSet) ) {
@@ -672,7 +691,7 @@ class af_ela_classGenerator {
 				$excats = preg_split('/[\s,]+/',$exclude);
 				if (count($excats)) {
 					foreach ($excats as $excat) {
-						$exclusions .= ' AND p2c.category_id <> ' . intval($excat) . ' ';
+						$exclusions .= ' AND tt.taxonomy = "category" AND tt.term_id <> ' . intval($excat) . ' ';
 					}
 				}
 			}
@@ -680,38 +699,54 @@ class af_ela_classGenerator {
 			$now = current_time('mysql', 1);
 			foreach( $this->tagsTable as $tag) {
 				$posts_in_tags[$tags[0]] = array();
-				$query = "SELECT p2t.post_id
-					FROM $tablepost2tag p2t 
-					INNER JOIN $wpdb->post2cat p2c ON p2t.post_id = p2c.post_ID
-					WHERE p2t.tag_id = $tag[0] 
-					$exclusions";
-				logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
+
+                $query = "SELECT ID, post_title, post_date AS `day`, comment_status, comment_count
+                          FROM $wpdb->posts
+                          INNER JOIN $wpdb->term_relationships AS tr
+                                ON (ID = tr.object_id)
+                          INNER JOIN $wpdb->term_taxonomy AS tt
+                                ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+                          WHERE tt.term_id = $tag[0]
+                          AND post_status = 'publish'
+                          AND post_date_gmt <= '$now'
+                          $exclusions
+                          ORDER BY post_date
+                            ";
+//				$query = "SELECT p2t.post_id
+//					FROM $tablepost2tag p2t 
+//					INNER JOIN $wpdb->post2cat p2c ON p2t.post_id = p2c.post_ID
+//					WHERE p2t.tag_id = $tag[0] 
+//					$exclusions";
+
 				$posts_in_tag_results = $wpdb->get_results($query);
-		
+				logthis("SQL Query :Posts in Tag: ". count($posts_in_tag_results) .$query, __FUNCTION__, __LINE__);
+                logthis(var_export($posts_in_tag_results, true));
 				if( $posts_in_tag_results ) {
-					$posts_in_tag_results = array_reverse($posts_in_tag_results);
-					foreach( $posts_in_tag_results as $posts_in_tag_result ) {
-						
-						$query = "SELECT ID, post_title, post_date as `day`, comment_status 
-							FROM $wpdb->posts 
-							WHERE ID = $posts_in_tag_result->post_id 
-							AND post_status = 'publish' 
-							AND post_date_gmt <= '$now'
-							ORDER By post_date";
-						logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
-						$post_results = $wpdb->get_results($query);
-						if( $post_results ) {
-							foreach( $post_results as $post_result ) {
-								$query = "SELECT COUNT(comment_ID) 
-									FROM $wpdb->comments 
-									WHERE comment_post_ID = $post_result->ID 
-									AND comment_approved = '1' 
-									$ping";
-								logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
-								$num_comments = $wpdb->get_var($query);
-								$this->postsInTagsTable[$tag[0]][$post_result->ID] = array($post_result->day, $post_result->post_title, get_permalink($post_result->ID), $num_comments, $post_result->comment_status);
-							}
-						}
+//					$posts_in_tag_results = array_reverse($posts_in_tag_results);
+					foreach( $posts_in_tag_results as $post_result ) {
+//
+//						$query = "SELECT ID, post_title, post_date as `day`, comment_status
+//							FROM $wpdb->posts
+//							WHERE ID = $posts_in_tag_result->post_id
+//							AND post_status = 'publish'
+//							AND post_date_gmt <= '$now'
+//							ORDER By post_date";
+//						logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
+//						$post_results = $wpdb->get_results($query);
+//						if( $post_results ) {
+//							foreach( $post_results as $post_result ) {
+//								$query = "SELECT COUNT(comment_ID)
+//									FROM $wpdb->comments
+//									WHERE comment_post_ID = $post_result->ID
+//									AND comment_approved = '1'
+//									$ping";
+//								logthis("SQL Query :".$query, __FUNCTION__, __LINE__);
+//								$num_comments = $wpdb->get_var($query);
+                                logthis(var_export($post_result,true));
+								$this->postsInTagsTable[$tag[0]][$post_result->ID] = array($post_result->day, $post_result->post_title, get_permalink($post_result->ID), $post_result->comment_count, $post_result->comment_status);
+                                logthis(var_export($this->postsInTagsTable[$tag[0]],true));
+//							}
+//						}
 					}
 					if ($this->postsInTagsTable[$tag[0]]) {
 						$this->cache->contentIs($this->postsInTagsTable[$tag[0]]);
