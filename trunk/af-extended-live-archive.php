@@ -33,14 +33,14 @@ if (!defined('WP_PLUGIN_URL')){
 
 $af_ela_cache_root = dirname(__FILE__) . '/cache/';
 $debug = false;
-$utw_is_present = false;
+$utw_is_present = true;
 $ela_plugin_basename = plugin_basename(__FILE__);
 
 
-if (file_exists(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php') && in_array('UltimateTagWarrior/ultimate-tag-warrior.php', get_option('active_plugins'))) {
-	@require_once(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php');
-	$utw_is_present=true;
-}
+//if (file_exists(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php') && in_array('UltimateTagWarrior/ultimate-tag-warrior.php', get_option('active_plugins'))) {
+//	@require_once(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php');
+//	$utw_is_present=true;
+//}
 
 require_once(dirname(__FILE__)."/af-extended-live-archive-include.php");
 

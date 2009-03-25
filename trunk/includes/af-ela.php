@@ -280,9 +280,9 @@ function af_ela_generate_tags() {
 				$num = ' ' . str_replace('%', $p[2], $settings['number_text_tagged']);
 			}
 			$tag_weight = $p[2] / $posted_tags * 100;
-			$utwClass = new UltimateTagWarriorCore;
-			$tag_weightcolor = $utwClass->GetColorForWeight($tag_weight);
-			$tag_weightfontsize = $utwClass->GetFontSizeForWeight($tag_weight);
+			//$utwClass = new UltimateTagWarriorCore;
+			$tag_weightcolor = "#000";//$utwClass->GetColorForWeight($tag_weight);
+			$tag_weightfontsize = "3";//$utwClass->GetFontSizeForWeight($tag_weight);
 			$tag_display = str_replace('_',' ', $p[1]);
 			$tag_display = str_replace('-',' ',$tag_display);
 			$tag_display = str_replace('+',' ',$tag_display);
