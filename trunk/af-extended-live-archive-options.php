@@ -507,25 +507,26 @@ function af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode) {
 			<tr valign="top" style="display: <?php echo $basicState; ?>">
 				<th scope="row"><label for="cat_asides">Asides Category:</label></th>
 				<td colspan="2"><?php
+                /* TODO need fixed!!! */
 				global $wpdb;
 				$asides_table = array();
-				$asides_table = explode(',', $settings['excluded_categories']);
-				if ($asides_table[0] != 0) {
-					$id = $asides_table[0];
-					$asides_title = $wpdb->get_var("SELECT cat_name from $wpdb->categories WHERE cat_ID = ${asides_table[0]}");
-				} else {
-					$asides_title='No Asides';
-				}
-				$asides_cats = $wpdb->get_results("SELECT * from $wpdb->categories");
+//				$asides_table = explode(',', $settings['excluded_categories']);
+//				if ($asides_table[0] != 0) {
+//					$id = $asides_table[0];
+//					$asides_title = $wpdb->get_var("SELECT cat_name from $wpdb->categories WHERE cat_ID = ${asides_table[0]}");
+//				} else {
+//					$asides_title='No Asides';
+//				}
+//				$asides_cats = $wpdb->get_results("SELECT * from $wpdb->categories");
 				 if ($current_mode == 0) {
 ?>				<select name="excluded_categories[]" id="cat_asides" style="width: 10em;" >
 				<option value="<?php echo $asides_table[0]; ?>"><?php echo $asides_title; ?></option>
 				<option value="-----">----</option>
 				<option value="0">No Asides</option>
 				<option value="-----">----</option><?php
-				foreach ($asides_cats as $cat) {
-					echo '<option value="' . $cat->cat_ID . '">' . $cat->cat_name . '</option>';
-            	}?>
+//				foreach ($asides_cats as $cat) {
+//					echo '<option value="' . $cat->cat_ID . '">' . $cat->cat_name . '</option>';
+//            	}?>
 				</select><small>&nbsp;&nbsp;&nbsp;The category you are using for your asides.</small></td><?php } ?>
 			</tr>		
 		</table>
