@@ -260,7 +260,48 @@ END_LIST;
 
 	return $category_list;
 }
+class UltimateTagWarriorCore{
+	function GetColorForWeight($weight) {
+		$maxtagcolour = "#0000FF";
+        $mintagcolour = "#000000";
+		if ($weight) {
+			$weight = $weight/100;
 
+			$minr = hexdec(substr($mintagcolour, 1, 2));
+			$ming = hexdec(substr($mintagcolour, 3, 2));
+			$minb = hexdec(substr($mintagcolour, 5, 2));
+
+			$maxr = hexdec(substr($maxtagcolour, 1, 2));
+			$maxg = hexdec(substr($maxtagcolour, 3, 2));
+			$maxb = hexdec(substr($maxtagcolour, 5, 2));
+
+			$r = dechex(intval((($maxr - $minr) * $weight) + $minr));
+			$g = dechex(intval((($maxg - $ming) * $weight) + $ming));
+			$b = dechex(intval((($maxb - $minb) * $weight) + $minb));
+
+			if (strlen($r) == 1) $r = "0" . $r;
+			if (strlen($g) == 1) $g = "0" . $g;
+			if (strlen($b) == 1) $b = "0" . $b;
+
+			return "#$r$g$b";
+		}
+	}
+    function GetFontSizeForWeight($weight) {
+		$maxtagsize = 150;
+        $mintagsize = 70;
+        $fontunits = '%';
+
+		if ($units == "") $units = '%';
+
+		if ($maxtagsize > $mintagsize) {
+			$fontsize = (($weight/100) * ($maxtagsize - $mintagsize)) + $mintagsize;
+		} else {
+			$fontsize = (((100-$weight)/100) * ($maxtagsize - $mintagsize)) + $maxtagsize;
+		}
+
+		return intval($fontsize) . $fontunits;
+	}
+}
 function af_ela_generate_tags() {
 	global $tag, $tags, $settings, $paged_post, $fade;
 	$tag_list = '';
@@ -280,9 +321,9 @@ function af_ela_generate_tags() {
 				$num = ' ' . str_replace('%', $p[2], $settings['number_text_tagged']);
 			}
 			$tag_weight = $p[2] / $posted_tags * 100;
-			//$utwClass = new UltimateTagWarriorCore;
-			$tag_weightcolor = "#000";//$utwClass->GetColorForWeight($tag_weight);
-			$tag_weightfontsize = "3";//$utwClass->GetFontSizeForWeight($tag_weight);
+			$utwClass = new UltimateTagWarriorCore;
+			$tag_weightcolor = $utwClass->GetColorForWeight($tag_weight);
+			$tag_weightfontsize = $utwClass->GetFontSizeForWeight($tag_weight);
 			$tag_display = str_replace('_',' ', $p[1]);
 			$tag_display = str_replace('-',' ',$tag_display);
 			$tag_display = str_replace('+',' ',$tag_display);
