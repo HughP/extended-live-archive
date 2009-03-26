@@ -1,4 +1,5 @@
 #summary this is the wiki home page of the ELA projcet
 
-[About_ELA_and_This_Project About ELA and This Project]
-[Useful_Links Useful Links]
+ * [About_ELA_and_This_Project About ELA and This Project]
+
+ * [Useful_Links Useful Links]
