@@ -1,0 +1,6 @@
+#summary A lot of links about ELA
+
+ * [http://www.sonsofskadi.net/extended-live-archive/ The Original ELA Homepage]
+ * [http://www.theglitch.ws/2008/07/15/extended-live-archives/ Jason's Patch]
+ * [http://www.theglitch.ws/archives/ Live Demo: Jason's Archive Page]
+ * [http://blog.tinyau.net/archives/2007/07/07/extended-live-archives-for-wordpress-23/ 天佑's Patch]
