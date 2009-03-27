@@ -49,7 +49,7 @@ function af_ela_option_init($reset = false) {
 	global $af_ela_cache_root;
 	if (!$reset) $settings = get_option('af_ela_options');	
     $is_initialized = get_option('af_ela_is_initialized');
-    //var_dump($is_initialized, $settings);
+
 	if (!$is_initialized
 			|| empty($settings)
 			|| strstr(trim(af_ela_info('currentversion')), trim($is_initialized)) === false
@@ -97,13 +97,13 @@ function af_ela_option_init($reset = false) {
 		
 		
 	// default text for the tab buttons
-		'menu_order' => 'chrono,cats',
-		'menu_month' => 'By date',
-		'menu_cat' => 'By category',
-		'menu_tag' => 'By tags',
+		'menu_order' => __('chrono,cats', 'ela'),
+		'menu_month' =>__('By date', 'ela'),
+		'menu_cat' => __('By category','ela'),
+		'menu_tag' => __('By tags', 'ela'),
 		'before_child' => '&nbsp;&nbsp;&nbsp;',
 		'after_child' => '',
-		'loading_content' => '...loading',
+		'loading_content' => __('...loading', 'ela'),
 		'idle_content' => '',
 		'excluded_categories' => '0');
 		
@@ -123,15 +123,21 @@ function af_ela_option_init($reset = false) {
             $res = af_ela_create_cache_dir();
 			if( !$res ) {
 				?>
-		<div class="updated"><p><strong>Unable to create cache directory. Check your server credentials on the wp-content directory.</strong></p></div>
+		<div class="updated"><p><strong>
+            <?php _e('Unable to create cache directory. Check your server credentials on the wp-content directory.','ela');?>
+        </strong></p></div>
 	<?php		return;
 			} else {
 				if( $res === true ) {
 					$res = af_ela_create_cache($settings);
 					if( $res === true ) {?>
-		<div class="updated"><p><strong>The cache files have been created for the first time. You should be up and running. Enjoy.</strong></p></div>
+		<div class="updated"><p><strong>
+            <?php _e('The cache files have been created for the first time. You should be up and running. Enjoy.','ela');?>
+        </strong></p></div>
 	<?php		 	} else {?>
-		<div class="updated"><p><strong>Unable to create the cache files. Check your server credentials on the wp-content/af-extended-live-archive directory. </strong></p></div>
+		<div class="updated"><p><strong>
+            <?php _e('Unable to create the cache files. Check your server credentials on the wp-content/af-extended-live-archive directory.','ela');?>
+        </strong></p></div>
 	<?php 			return;
 					}
 				}
@@ -139,10 +145,14 @@ function af_ela_option_init($reset = false) {
 		} else {
 			if( af_ela_create_cache($settings) ) {
 				if (!$reset) {?>
-		<div class="updated"><p><strong>The cache files have been updated. You should be up and running. Enjoy.</strong></p></div>
+		<div class="updated"><p><strong>
+            <?php _e('The cache files have been updated. You should be up and running. Enjoy.','ela');?>
+        </strong></p></div>
 	<?php		}
 			} else {?>
-		<div class="updated"><p><strong>Unable to update the cache files to the newer version of the plugin. Check your server credentials on the wp-content/af-extended-live-archive directory. </strong></p></div>
+		<div class="updated"><p><strong>
+            <?php _e('Unable to update the cache files to the newer version of the plugin. Check your server credentials on the wp-content/af-extended-live-archive directory.','ela');?>
+        </strong></p></div>
 	<?php 	return;
 			}
 		}
@@ -209,7 +219,9 @@ function af_ela_option_update() {
 	$asides_cats = $wpdb->get_results("SELECT * from $wpdb->categories");
 	$comma ='';
 	if (!isset($_POST['excluded_categories'])) {?>
-	<div class="updated"><p><strong>What's the point of not showing up any categories at all ?</strong></p></div> <?php
+	<div class="updated"><p><strong>
+        <?php _e('What\'s the point of not showing up any categories at all ?','ela');?>
+    </strong></p></div> <?php
 	} else {
 		if ($current_mode == 0) {
 			$settings['excluded_categories'] = $_POST['excluded_categories'][0];
@@ -255,7 +267,8 @@ function af_ela_remote_version_check() {
 
 function af_ela_admin_page() {
 	af_ela_option_init();
-	if (($remote = af_ela_remote_version_check()) == 1) {
+    $remote = af_ela_remote_version_check();
+	if ($remote == 1) {
 		echo '<div id="message" class="updated fade"><p><a href="'. af_ela_info('homeurl').'" title="'.af_ela_info('homename').'">There is a ELA update available</a></p></div>';
 	}
 	
@@ -264,10 +277,9 @@ function af_ela_admin_page() {
 			$cache = new af_ela_classCacheFile('');
 			$reset_return= $cache->deleteFile();
 			if ($reset_return) {
-				?>
-	<div class="updated"><p><strong>Cache emptied</strong></p></div> <?php
+				echo '<div class="updated"><p><strong>', __('Cache emptied','ela'), '</strong></p></div>';
 			} else {
-				?>	<div class="updated"><p><strong>Cache was already empty</strong></p></div> <?php
+				echo '<div class="updated"><p><strong>', __('Cache was already empty','ela'), '</strong></p></div>';
 			}
 		} elseif (isset($_POST['switch_option_mode'])) {
 		 	$current_mode = get_option('af_ela_option_mode');
@@ -283,16 +295,16 @@ function af_ela_admin_page() {
 			af_ela_option_init(true);
 		} else {		
 			af_ela_option_update();
-			?>	<div class="updated"><p>Extended Live Archive Options have been updated</p></div> <?php 
+			echo '<div class="updated"><p>', __('Extended Live Archive Options have been updated','ela'), '</p></div>';
 		}
 	}
 	$current_mode = get_option('af_ela_option_mode');
 	if ($current_mode == 0) {
-		$option_mode_text = 'Show Advanced Options Panel';
+		$option_mode_text = __('Show Advanced Options Panel','ela');
 		$advancedState = 'none';
 		$basicState = 'table-row';
 	} else {
-		$option_mode_text = 'Hide Advanced Options Panel';
+		$option_mode_text = __('Hide Advanced Options Panel','ela');
 		$advancedState = 'block';
 		$basicState = 'none';
 	}
@@ -457,52 +469,52 @@ function af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode) {
 		<fieldset class="options"><legend>What to show ? </legend>
 		<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 			<tr>
-				<th width="30%" valign="top" scope="row"><label for="newest_first">Show Newest First:</label></th>
+				<th width="30%" valign="top" scope="row"><label for="newest_first"><?php _e('Show Newest First:','ela');?></label></th>
 				<td width="5%">
 					<input name="newest_first" id="newest_first" type="checkbox" value="<?php echo $settings['newest_first']; ?>" <?php checked('1', $settings['newest_first']); ?> />
 				</td>
-				<td><small>Enabling this will show the newest post first in the listings.</small></td>
+				<td><small><?php _e('Enabling this will show the newest post first in the listings.','ela');?></small></td>
 			</tr>
 			<tr>
-				<th width="30%" valign="top" scope="row"><label for="num_entries" >Show Number of Entries:</label></th>
+				<th width="30%" valign="top" scope="row"><label for="num_entries" ><?php _e('Show Number of Entries:','ela');?></label></th>
 				<td width="5%">
 					<input onchange="Javascript:disableDOM('number_text', 'num_entries');" name="num_entries" id="num_entries" type="checkbox" value="<?php echo $settings['num_entries']; ?>" <?php checked('1', $settings['num_entries']); ?> />
 				</td>
-				<td><small>Sets whether the number of entries for each year, month, category should be shown.</small></td>
+				<td><small><?php _e('Sets whether the number of entries for each year, month, category should be shown.','ela');?></small></td>
 			</tr><?php if($utw_is_present) { ?>
 			<tr>
-				<th width="30%" valign="top" scope="row"><label for="num_entries_tagged">Show Number of Entries Per Tag:</label></th>
+				<th width="30%" valign="top" scope="row"><label for="num_entries_tagged"><?php _e('Show Number of Entries Per Tag:','ela');?></label></th>
 				<td width="5%">
 					<input onchange="Javascript:disableDOM('number_text_tagged', 'num_entries_tagged');" name="num_entries_tagged" id="num_entries_tagged" type="checkbox" value="<?php echo $settings['num_entries_tagged']; ?>" <?php checked('1', $settings['num_entries_tagged']); ?> /></td>
-				<td><small>Sets whether the number of entries for each tags should be shown</small></td>
+				<td><small><?php _e('Sets whether the number of entries for each tags should be shown','ela');?></small></td>
 			</tr><?php } ?>
 			<tr>
-				<th width="30%" valign="top" scope="row"><label for="num_comments">Show Number of Comments:</label></th>
+				<th width="30%" valign="top" scope="row"><label for="num_comments"><?php _e('Show Number of Comments:','ela');?></label></th>
 				<td width="5%">
-					<input onchange="Javascript:disableDOM('comment_text', 'num_comments');disableDOM('closed_comment_text', 'num_comments');disableDOM('hide_pingbacks_and_trackbacks', 'num_comments');" name="num_comments" id="num_comments" type="checkbox" value="<?php echo $settings['num_comments']; ?>" <?php checked('1', $settings['num_comments']); ?> /></td><td><small>Sets whether the number of comments for each entry should be shown</small>
-				</td>
+					<input onchange="Javascript:disableDOM('comment_text', 'num_comments');disableDOM('closed_comment_text', 'num_comments');disableDOM('hide_pingbacks_and_trackbacks', 'num_comments');" name="num_comments" id="num_comments" type="checkbox" value="<?php echo $settings['num_comments']; ?>" <?php checked('1', $settings['num_comments']); ?> /></td>
+                <td><small><?php _e('Sets whether the number of comments for each entry should be shown','ela');?></small></td>
 			</tr>
 			<tr>
-				<th width="30%" valign="top" scope="row"><label for="fade">Fade Anything Technique:</label></th>
+				<th width="30%" valign="top" scope="row"><label for="fade"><?php _e('Fade Anything Technique:','ela');?></label></th>
 				<td width="5%">
 					<input name="fade" id="fade" type="checkbox" value="<?php echo $settings['fade']; ?>" <?php checked('1', $settings['fade']); ?> />
 				</td>
-				<td><small>Sets whether changes should fade using the Fade Anything Technique</small></td>
+				<td><small><?php _e('Sets whether changes should fade using the Fade Anything ','ela');?></small></td>
 			</tr>
 			<tr>
 				<th width="30%" valign="top" scope="row"><label for="hide_pingbacks_and_trackbacks">Hide Ping- and Trackbacks:</label></th>
 				<td width="5%">
 					<input name="hide_pingbacks_and_trackbacks" id="hide_pingbacks_and_trackbacks" type="checkbox" value="<?php echo $settings['hide_pingbacks_and_trackbacks']; ?>" <?php checked('1', $settings['hide_pingbacks_and_trackbacks']); ?> />
 				</td>
-				<td><small>Sets whether ping- and trackbacks should influence the number of comments on an entry</small></td>
+				<td><small><?php _e('Sets whether ping- and trackbacks should influence the number of comments on an entry','ela');?></small></td>
 			</tr>
 			<tr>
 			<th width="30%" valign="top" scope="row"><label for="use_default_style">Use the default CSS stylesheet:</label></th>
-				<td width="5%"><input name="use_default_style" id="use_default_style" type="checkbox" value="<?php echo $settings['use_default_style']; ?>" <?php checked('1', $settings['use_default_style']); ?> /></td><td><small>If it exists, will link the <strong>ela.css</strong> stylesheet of your theme. If not present, will link the default stylesheet.</small></td>
+				<td width="5%"><input name="use_default_style" id="use_default_style" type="checkbox" value="<?php echo $settings['use_default_style']; ?>" <?php checked('1', $settings['use_default_style']); ?> /></td><td><small><?php _e('If it exists, will link the <strong>ela.css</strong> stylesheet of your theme. If not present, will link the default stylesheet.','ela');?></small></td>
 			</tr>
 			<tr>
 			<th width="30%" valign="top" scope="row"><label for="paged_posts">Layout the posts link into pages:</label></th>
-				<td width="5%"><input  onchange="hideDOM('fieldsetpagedposts', 'paged_posts');" name="paged_posts" id="paged_posts" type="checkbox" value="<?php echo $settings['paged_posts']; ?>" <?php checked('1', $settings['paged_posts']); ?> /></td><td><small>Sets whether the posts list will be cut into several pages or just the complete list.</small></td>
+				<td width="5%"><input  onchange="hideDOM('fieldsetpagedposts', 'paged_posts');" name="paged_posts" id="paged_posts" type="checkbox" value="<?php echo $settings['paged_posts']; ?>" <?php checked('1', $settings['paged_posts']); ?> /></td><td><small><?php _e('Sets whether the posts list will be cut into several pages or just the complete list.','ela');?></small></td>
 			</tr>
 			<tr valign="top" style="display: <?php echo $basicState; ?>">
 				<th scope="row"><label for="cat_asides">Asides Category:</label></th>
@@ -527,7 +539,7 @@ function af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode) {
 //				foreach ($asides_cats as $cat) {
 //					echo '<option value="' . $cat->cat_ID . '">' . $cat->cat_name . '</option>';
 //            	}?>
-				</select><small>&nbsp;&nbsp;&nbsp;The category you are using for your asides.</small></td><?php } ?>
+				</select><small><?php _e('&nbsp;&nbsp;&nbsp;The category you are using for your asides.','ela');?></small></td><?php } ?>
 			</tr>		
 		</table>
 		</fieldset><?php
@@ -540,42 +552,42 @@ function af_ela_echo_fieldset_howtoshow($settings,$advancedState) {
 			<tr valign="top">
 				<th width="180" scope="row"><label for="selected_text">Selected Text:</label></th>
 				<td><input name="selected_text" id="selected_text" type="text" value="<?php echo $settings['selected_text']; ?>" size="30" /><br/>
-				<small>The text that is shown after the currently selected year, month or category.</small></td>
+				<small><?php _e('The text that is shown after the currently selected year, month or category.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="selected_class">Selected Class:</label></th>
 				<td ><input name="selected_class" id="selected_class" type="text" value="<?php echo $settings['selected_class']; ?>" size="30" /><br/>
-				<small>The CSS class for the currently selected year, month or category.</small></td>
+				<small><?php _e('The CSS class for the currently selected year, month or category.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="number_text"># of Entries Text:</label></th>
 				<td><input name="number_text" id="number_text" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['number_text'])); ?>" size="30" /><br/>
-				<small>The string to show for number of entries per year, month or category. Can contain HTML. % is replaced with number of entries.</small></td>
+				<small><?php _e('The string to show for number of entries per year, month or category. Can contain HTML. % is replaced with number of entries.','ela');?></small></td>
 			</tr><?php if($utw_is_present) { ?>
 			<tr valign="top">
 				<th scope="row"><label for="number_text_tagged"># of Tagged-Entries Text:</label></th>
 				<td><input name="number_text_tagged" id="number_text_tagged" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['number_text_tagged'])); ?>" size="30" /><br/>
-				<small>The string to show for number of entries per tag. Can contain HTML. % is replaced with number of entries.</small></td>
+				<small><?php _e('The string to show for number of entries per tag. Can contain HTML. % is replaced with number of entries.','ela');?></small></td>
 			</tr><?php } ?>
 			<tr valign="top">
 				<th scope="row"><label for="comment_text"># of Comments Text:</label></th>
 				<td><input name="comment_text" id="comment_text" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['comment_text'])); ?>" size="30" /><br/>
-				<small>The string to show for comments. Can contain HTML. % is replaced with number of comments.</small></td>
+				<small><?php _e('The string to show for comments. Can contain HTML. % is replaced with number of comments.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="closed_comment_text ">Closed Comment Text:</label></th>
 				<td><input name="closed_comment_text" id="closed_comment_text" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['closed_comment_text'])); ?>" size="30" /><br/>
-				<small>The string to show if comments are closed on an entry. Can contain HTML.</small></td>
+				<small><?php _e('The string to show if comments are closed on an entry. Can contain HTML.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="day_format">Day of Posting Format:</label></th>
 				<td><input name="day_format" type="text" id="day_format" value="<?php echo $settings['day_format']; ?>" size="30" /><br/>
-				<small>A date format string to show the day for each entry in the chronological tab only ('jS' to show 1st, 3rd, and 14th). Format string is in the <a href="http://www.php.net/date">php date format</a>. Reference to year and month in there will result in error : this intended for days only. Leave empty to show no date.</small></td>
+				<small><?php _e('A date format string to show the day for each entry in the chronological tab only (\'jS\' to show 1st, 3rd, and 14th). Format string is in the <a href="http://www.php.net/date">php date format</a>. Reference to year and month in there will result in error : this intended for days only. Leave empty to show no date.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="error_class">Error Class:</label></th>
 				<td><input name="error_class" type="text" id="error_class" value="<?php echo $settings['error_class']; ?>" size="30" /><br/>
-				<small>The CSS class to put on paragraphs containing errors.</small></td>
+				<small><?php _e('The CSS class to put on paragraphs containing errors.','ela');?></small></td>
 			</tr>
 		</table>
 		</fieldset><?php
@@ -589,39 +601,39 @@ function af_ela_echo_fieldset_howtocut($settings,$advancedState) {
 			<tr valign="top">
 				<th width="180" scope="row"><label for="truncate_title_length">Max Entry Title Length:</label></th>
 				<td><input name="truncate_title_length" id="truncate_title_length" type="text" value="<?php echo $settings['truncate_title_length']; ?>" size="8" /><br/>
-				<small>Length at which to truncate title of entries. Set to <strong>0</strong> to leave the titles not truncated.</small></td>
+				<small><?php _e('Length at which to truncate title of entries. Set to <strong>0</strong> to leave the titles not truncated.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="truncate_cat_length" >Max Cat. Title Length:</label></th>
 				<td><input name="truncate_cat_length" id="truncate_cat_length" type="text" value="<?php echo $settings['truncate_cat_length']; ?>" size="8"  /><br/>
-				<small>Length at which to truncate name of categories. Set to <strong>0</strong> to leave the category names not truncated</small></td>
+				<small><?php _e('Length at which to truncate name of categories. Set to <strong>0</strong> to leave the category names not truncated','ela');?></small></td>
 			</tr> 
 			<tr valign="top"> 
 				<th scope="row"><label for="truncate_title_text">Truncated Text:</label></th>
 				<td><input name="truncate_title_text" id="truncate_title_text" type="text" value="<?php echo $settings['truncate_title_text']; ?>" size="8" /><br/>
-				<small>The text that will be written after the entries titles and the categories names that have been truncated. &#8230; (<strong>&amp;#8230;</strong>) is a common example.</small></td>
+				<small><?php _e('The text that will be written after the entries titles and the categories names that have been truncated. &#8230; (<strong>&amp;#8230;</strong>) is a common example.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="truncate_title_at_space">Truncate at space:</label></th>
 				<td><input name="truncate_title_at_space" id="truncate_title_at_space" type="checkbox" value="<?php echo $settings['truncate_title_at_space']; ?>" <?php checked('1', $settings['truncate_title_at_space']); ?> /><br/>
-				<small>Sets whether at title should be truncated at the last space before the length to be truncated to, or if words should be truncated mid-senten...</small></td>
+				<small><?php _e('Sets whether at title should be truncated at the last space before the length to be truncated to, or if words should be truncated mid-senten...','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="abbreviated_month">Abbreviate month names:</label></th>
 				<td><input name="abbreviated_month" id="abbreviated_month" type="checkbox" value="<?php echo $settings['abbreviated_month']; ?>" <?php checked('1', $settings['abbreviated_month']); ?> /><br/>
-				<small>Sets whether the month names will be abbreviated to three letters.</small></td>
+				<small><?php _e('Sets whether the month names will be abbreviated to three letters.','ela');?></small></td>
 			</tr><?php if ($utw_is_present) { ?>			
 			<tr valign="top">
 				<th scope="row"><label for="tag_soup_cut">Displayed tags:</label></th>
-				<td><input name="tag_soup_cut" id="tag_soup_cut0" type="radio" value="0" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('0', $settings['tag_soup_cut']); ?> /><small>Show all tags.</small>
-				<br /><input name="tag_soup_cut" id="tag_soup_cut1" type="radio" value="1" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('1', $settings['tag_soup_cut']); ?> /><small>Show the first <strong>X</strong> most-used tags.</small>
-				<br /><input name="tag_soup_cut" id="tag_soup_cut2" type="radio" value="2" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('2', $settings['tag_soup_cut']); ?> /><small>Show tags with more than <strong>X</strong> posts.</small>
+				<td><input name="tag_soup_cut" id="tag_soup_cut0" type="radio" value="0" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('0', $settings['tag_soup_cut']); ?> /><small><?php _e('Show all tags.','ela');?></small>
+				<br /><input name="tag_soup_cut" id="tag_soup_cut1" type="radio" value="1" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('1', $settings['tag_soup_cut']); ?> /><small><?php _e('Show the first <strong>X</strong> most-used tags.','ela');?></small>
+				<br /><input name="tag_soup_cut" id="tag_soup_cut2" type="radio" value="2" onchange="Javascript:disableDOMinv('tag_soup_X', 'tag_soup_cut0');" <?php checked('2', $settings['tag_soup_cut']); ?> /><small><?php _e('Show tags with more than <strong>X</strong> posts.','ela');?></small>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="tag_soup_X">The X in the selected above description:</label></th>
 				<td><input name="tag_soup_X" id="tag_soup_X" type="text" value="<?php echo $settings['tag_soup_X']; ?>" /><br/>
-				<small>Sets depending on the selection made above the number of post per tag needed to display the tag or the number of most-used tags to display.</small></td>
+				<small><?php _e('Sets depending on the selection made above the number of post per tag needed to display the tag or the number of most-used tags to display.','ela');?></small></td>
 			</tr><?php }?>
 		</table>
 		</fieldset><?php
@@ -655,43 +667,43 @@ function af_ela_echo_fieldset_whataboutthemenus($settings,$advancedState) {
 				<option id="cats2" value="cats" <?php echo ($menu_table[2] == 'cats') ? 'selected' : '' ?>>By category</option>
 				<option id="tags2" value="tags" <?php echo ($menu_table[2] == 'tags') ? 'selected' : '' ?>>By tag</option>
 				</select><?php } ?>
-				<br/><small>The order of the tab to display.</small></td>
+				<br/><small><?php _e('The order of the tab to display.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th width="180" scope="row"><label for="menu_month">Chronological Tab Text:</label></th>
 				<td><input name="menu_month" id="menu_month" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['menu_month'])); ?>" size="30" /><br/>
-				<small>The text written in the chronological tab.</small></td>
+				<small><?php _e('The text written in the chronological tab.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="menu_cat">By Category Tab Text:</label></th>
 				<td><input name="menu_cat" id="menu_cat" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['menu_cat'])); ?>" size="30" /><br/>
-				<small>The text written in the categories tab.</small></td>
+				<small><?php _e('The text written in the categories tab.','ela');?></small></td>
 			</tr><?php if($utw_is_present) { ?>
 			<tr valign="top">
 				<th scope="row"><label for="menu_tag">By Tag Tab Text:</label></th>
 				<td><input name="menu_tag" id="menu_tag" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['menu_tag'])); ?>" size="30" /><br/>
-				<small>The text written in the tags tab.</small></td>
+				<small><?php _e('The text written in the tags tab.','ela');?></small></td>
 			</tr><?php } ?>
 	
 			<tr valign="top">
 				<th scope="row"><label for="before_child">Before Child Text:</label></th>
 				<td><input name="before_child" id="before_child" type="text" value="<?php echo htmlspecialchars($settings['before_child']); ?>" size="30" /><br/>
-				<small>The text written before each category which is a child of another. This is recursive.</small></td>
+				<small><?php _e('The text written before each category which is a child of another. This is recursive.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="after_child">After Child Text:</label></th>
 				<td><input name="after_child" id="after_child" type="text" value="<?php echo $settings['after_child']; ?>" size="30" /><br/>
-				<small>The text that after each category which is a child of another. This is recursive.</small></td>
+				<small><?php _e('The text that after each category which is a child of another. This is recursive.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="loading_content">Loading Content:</label></th>
 				<td><input name="loading_content" id="loading_content" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['loading_content'])); ?>" size="30" /><br/>
-				<small>The text displayed when the data are being fetched from the server (basically when stuff is loading). Can contain HTML.</small></td>
+				<small><?php _e('The text displayed when the data are being fetched from the server (basically when stuff is loading). Can contain HTML.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="idle_content">Idle Content:</label></th>
 				<td><input name="idle_content" id="idle_content" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['idle_content'])); ?>" size="30" /><br/>
-				<small>The text displayed when no data are being fetched from the server (basically when stuff is not loading). Can contain HTML.</small></td>
+				<small><?php _e('The text displayed when no data are being fetched from the server (basically when stuff is not loading). Can contain HTML.','ela');?></small></td>
 			</tr>
 		</table>
 		</fieldset><?php
@@ -735,17 +747,17 @@ function af_ela_echo_fieldset_whataboutthepagedposts($settings,$advancedState) {
 			<tr valign="top">
 				<th scope="row"><label for="paged_post_num">Max # of Posts per page:</label></th>
 				<td><input name="paged_post_num" id="paged_post_num" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['paged_post_num'])); ?>" size="30" /><br/>
-				<small>The max number of posts that will be listed per page.</small></td>
+				<small><?php _e('The max number of posts that will be listed per page.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="paged_post_next">Next Page of Posts:</label></th>
 				<td><input name="paged_post_next" id="paged_post_next" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['paged_post_next'])); ?>" size="30" /><br/>
-				<small>The text written as the link to the next page.</small></td>
+				<small><?php _e('The text written as the link to the next page.','ela');?></small></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="paged_post_prev">Previous Page of Posts:</label></th>
 				<td><input name="paged_post_prev" id="paged_post_prev" type="text" value="<?php echo htmlspecialchars(stripslashes($settings['paged_post_prev'])); ?>" size="30" /><br/>
-				<small>The text written as the link to the previous page.</small></td>
+				<small><?php _e('The text written as the link to the previous page.','ela');?></small></td>
 			</tr>
 		</table>
 		</fieldset>
