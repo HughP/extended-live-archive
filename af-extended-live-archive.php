@@ -198,7 +198,9 @@ function af_ela_post_change($id) {
 	
 	return $id;
 }
-
+function af_ela_create_cache_dir(){
+    return mkdir($af_ela_cache_root);
+}
 /***************************************
  * creation of the cache
  **************************************/	
