@@ -6,49 +6,48 @@ Requires at least: 2.5
 Tested up to: 2.7
 Stable tag: 0.20
 
-This plugin extends functionalities of WordPress by many sidebar widgets and template tags. Recent comments, random posts, most commented posts, etc.
+Extended Live Archive(ELA) is a very cool WordPress plugin, which can generate a clean, structured archive page with fantastic visual effect.
 
 == Description ==
 
-The Extended Live Archive plugin is one selfcontained bundle called af-extended-live-archive, which should be put into the plugin folder to yield the following structure:
+>   The Extended Live Archive plugin is one selfcontained bundle called af-extended-live-archive, which should be put into the plugin folder to yield the following structure:
+>
+>   af-extended-live-archive
+>   \_  af-extended-live-archive-include.php
+>   \_  af-extended-live-archive-options.php
+>   \_  af-extended-live-archive.php
+>   \_  elalicenses.txt
+>   \_  readme.txt
+>   \_  ReadMe_version_0.10beta.html
+>   \_  cache
+>   \_  includes
+>        \_ af-ela-style.css
+>        \_ af-ela.php
+>        \_ af-extended-live-archive.js.php
+>
+>   The plugin provides a single template function called af_ela_super_archive(). It writes some javascript information in the page it's called in and initializes the whole thing. Some parameter can be passed to the template function However, it is STRONGLY recommended that one uses the option panel the plugin is adding to the admin pages to configure ELA.
+>
+>   Doing so, all one has to do to display the Extended Live Archive is to add a <?php af_ela_super_archive(); ?> call wherever one wants the stuff to show up.
+>
+>   Note that if you are using K2, beta one r96 or after, the archives page is already doing that for you.
+>
+>   To install the plugin,
+>
+>      1. upload the af-extended-archive directory and its content to your wp-content/plugins/ directory.
+>      2. make sure the cache directory permission are set to 0777 (refer to your webhost knowledge-base if need be)
+>      3. Then, visit the option->Ext. Live Archive page once to initialize it.
 
-af-extended-live-archive
-©¦  af-extended-live-archive-include.php
-©¦  af-extended-live-archive-options.php
-©¦  af-extended-live-archive.php
-©¦  elalicenses.txt
-©¦  readme.txt
-©¦  ReadMe_version_0.10beta.html
-©¦  treefile
-©¦  
-©À©¤cache
-©¸©¤includes
-        af-ela-style.css
-        af-ela.php
-        af-extended-live-archive.js.php
+The development of the original ELA stopped in June 22nd, 2006, the final version is 0.10 beta R18, which is for WordPress older than version 2.3. Because of the changes of WP database structure, the original ELA did not work in WordPress 2.3 or later. Nevertheless, bloggers can not stop loving it. Many worm hearted programmers fixed this plugin again and again. Till now, you can still find a few working versions of ELA for even WordPress 2.7 or later(This project is also one of them). Of course, this kind of searching work is not that easy.
 
-The plugin provides a single template function called af_ela_super_archive(). It writes some javascript information in the page it's called in and initializes the whole thing. Some parameter can be passed to the template function However, it is STRONGLY recommended that one uses the option panel the plugin is adding to the admin pages to configure ELA.
-
-Doing so, all one has to do to display the Extended Live Archive is to add a <?php af_ela_super_archive(); ?> call wherever one wants the stuff to show up.
-
-Note that if you are using K2, beta one r96 or after, the archives page is already doing that for you.
-
-To install the plugin,
-
-   1. upload the af-extended-archive directory and its content to your wp-content/plugins/ directory.
-   2. make sure the cache directory permission are set to 0777 (refer to your webhost knowledge-base if need be)
-   3. Then, visit the option->Ext. Live Archive page once to initialize it.
-
+Although there are many patches of ELA, none of them make it better. All the patches you can find are to fix ELA under a certain WordPress version. The aim of this project is to make ELA stronger, faster and easier to use. And this page will exist untill Google company is closed down. 
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
 
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+1. Upload `af-extended-live-archive` to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Place `<?php af_ela_super_archive(); ?>` in your archive page template. Generally it is named archives.php NOT the archive.php.
 
 == Frequently Asked Questions ==
 
@@ -62,9 +61,8 @@ Answer to foo bar dilemma.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
+1. The effect of archive by date.
+2. by category
 
 == Arbitrary section ==
 
@@ -108,3 +106,31 @@ of these directories are:
 * "inc" all the code of this plugin include php, js and css
 * "libs" libraries
 * "media" binary files include images, logos, etc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
