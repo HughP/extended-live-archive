@@ -3,7 +3,7 @@
  Plugin Name: Extended Live Archives 
  Plugin URI: http://extended-live-archive.googlecode.com/
  Description: The famous ELA for WP 2.7.
- Version: 0.2alpha
+ Version: 0.10
  Author: Charles
  Author URI: http://sexywp.com
  */
