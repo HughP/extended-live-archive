@@ -56,9 +56,9 @@ class af_ela_classGenerator {
 	 * Helper Function : class constructor
 	 * ***********************************/	
 	function af_ela_classGenerator() {
-		global $utw_is_present;
+		
 		$this->cache = new af_ela_classCacheFile('');
-		//if($utw_is_present) $this->utwCore = new UltimateTagWarriorCore;
+		
 		return true;
 	}
 	/* ***********************************
@@ -515,8 +515,7 @@ class af_ela_classGenerator {
 	 * Helper Function : build Tags.
 	 * ***********************************/	
 	function buildTagsTable($exclude='', $id = false, $order = false, $orderparam = 0) {
-		global $utw_is_present;
-		if($utw_is_present) {
+		
 			global $wpdb;//, $tabletags, $tablepost2tag;
 			
 			if (!empty($exclude)) {
@@ -582,7 +581,7 @@ class af_ela_classGenerator {
 					}
 				}
 			}
-		}
+		
 		if (empty($this->tagsTable)) return false;
 		return true;
 	}
@@ -591,8 +590,7 @@ class af_ela_classGenerator {
 	 * 			Tags
 	 * ***********************************/	
 	function buildPostsInTagsTable($exclude='',$hide_ping_and_track) {
-		global $utw_is_present;
-		if($utw_is_present) { 	
+		
 			global $wpdb, $tabletags, $tablepost2tag;
 			
 			if( 1 == $hide_ping_and_track ) {
@@ -644,7 +642,7 @@ class af_ela_classGenerator {
 					}
 				}
 			}
-		}
+		
 	}
 	/* ***********************************
 	 * Helper Function : sort a mulitdim 

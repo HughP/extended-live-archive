@@ -1,6 +1,6 @@
 <?php 
 /* 
- Plugin Name: Extended Live Archives 
+ Plugin Name: Better ELA
  Plugin URI: http://extended-live-archive.googlecode.com/
  Description: The famous ELA for WP 2.7.
  Version: 0.10
@@ -35,12 +35,6 @@ $af_ela_cache_root = dirname(__FILE__) . '/cache/';
 $debug = false;
 $utw_is_present = true;
 $ela_plugin_basename = plugin_basename(__FILE__);
-
-
-//if (file_exists(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php') && in_array('UltimateTagWarrior/ultimate-tag-warrior.php', get_option('active_plugins'))) {
-//	@require_once(ABSPATH . 'wp-content/plugins/UltimateTagWarrior/ultimate-tag-warrior-core.php');
-//	$utw_is_present=true;
-//}
 
 require_once(dirname(__FILE__)."/af-extended-live-archive-include.php");
 
@@ -85,7 +79,8 @@ function af_ela_super_archive($arguments = '') {
 		ORDER BY post_date DESC LIMIT 1");
 	
 		
-	if( !is_dir($af_ela_cache_root) || !is_file($af_ela_cache_root.'years.dat') || $num_posts != $options['num_posts'] || $last_post_id != $options['last_post_id'] ) {
+	if( !is_dir($af_ela_cache_root) || !is_file($af_ela_cache_root.'years.dat')
+     || $num_posts != $options['num_posts'] || $last_post_id != $options['last_post_id'] ) {
 		$options['num_posts'] = $num_posts;
 		$options['last_post_id'] = $last_post_id;
 		update_option('af_ela_super_archive', $options);
@@ -164,7 +159,7 @@ function af_ela_comment_change($id) {
  * actions when a post changes.
  **************************************/	
 function af_ela_post_change($id) {
-	global $wpdb,$utw_is_present;
+	global $wpdb;
 	$generator = new af_ela_classGenerator;
 	
 	$settings = get_option('af_ela_options');
@@ -192,9 +187,9 @@ function af_ela_post_change($id) {
 	
 	$generator->buildPostsInCatsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
 	
-	if($utw_is_present) $ret = $generator->buildTagsTable($settings['excluded_categories'], $idTags, $order, $orderparam);
+    $ret = $generator->buildTagsTable($settings['excluded_categories'], $idTags, $order, $orderparam);
 		
-	if($ret && $utw_is_present) $generator->buildPostsInTagsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
+	if($ret) $generator->buildPostsInTagsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
 	
 	return $id;
 }
@@ -205,7 +200,7 @@ function af_ela_create_cache_dir(){
  * creation of the cache
  **************************************/	
 function af_ela_create_cache($settings) {
-	global $wpdb, $af_ela_cache_root, $utw_is_present;
+	global $wpdb, $af_ela_cache_root;
 
 	if( !is_dir($af_ela_cache_root) ) {
 		if(!af_ela_create_cache_dir()) return false;
@@ -230,9 +225,9 @@ function af_ela_create_cache($settings) {
 
 	$generator->buildPostsInCatsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
 	
-	if($utw_is_present) $ret = $generator->buildTagsTable($settings['excluded_categories'], false, $order, $orderparam);
+	$ret = $generator->buildTagsTable($settings['excluded_categories'], false, $order, $orderparam);
 	
-	if($ret && $utw_is_present) $generator->buildPostsInTagsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
+	if($ret) $generator->buildPostsInTagsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
 	
 	return true;
 }
@@ -243,7 +238,7 @@ function af_ela_create_cache($settings) {
  * TODO  need to do some more checks 
  **************************************/
 function af_ela_set_config($config, $reset=false) {
-	global $wpdb, $af_ela_cache_root, $utw_is_present;
+	global $wpdb, $af_ela_cache_root;
 
 	$settings = get_option('af_ela_options');
 	
