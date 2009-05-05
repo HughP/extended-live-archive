@@ -10,7 +10,7 @@
  * dirty little debug function
  * ***********************************/	
 function logthis($message,$function = __FUNCTION__ ,$line = __LINE__, $file = __FILE__, $info = false) {
-	global $af_ela_cache_root, $debug;
+	global $debug;
 	
 	if ($debug) {
 		$handle = @fopen(ABSPATH ."wp-content/log.log", 'a');
@@ -695,16 +695,16 @@ class af_ela_classCacheFile {
 	 * 			readFileContent property
 	 * ***********************************/	
 	function readFile($filename = false) {
-		global $af_ela_cache_root;
+		global $ela_cache_root;
 		
 		if(!($filename===false)) $this->fileName = $filename;
 		
-		$handle = @fopen ($af_ela_cache_root.$this->fileName, "r");
+		$handle = @fopen ($ela_cache_root.$this->fileName, "r");
 		if( $handle === false ) {
 			return false;
 		}
 		
-		$buf = fread($handle, filesize($af_ela_cache_root.$this->fileName));
+		$buf = fread($handle, filesize($ela_cache_root.$this->fileName));
 		$this->readFileContent = unserialize($buf);
 		
 		fclose ($handle);
@@ -716,11 +716,11 @@ class af_ela_classCacheFile {
 	 * 			system
 	 * ***********************************/	
 	function writeFile($filename = false) {
-		global $af_ela_cache_root;
+		global $ela_cache_root;
 		
 		if(!($filename===false)) $this->fileName = $filename;
 		
-		$handle = fopen($af_ela_cache_root . $this->fileName, 'w');
+		$handle = fopen($ela_cache_root . $this->fileName, 'w');
 		if( $handle === false ) {
 			return false;
 		}
@@ -733,8 +733,8 @@ class af_ela_classCacheFile {
 	 * 			files
 	 * ***********************************/	
 	function deleteFile() {
-		global $wpdb, $af_ela_cache_root;
-		$del_cache_path = $af_ela_cache_root . "*.dat";
+		global $wpdb, $ela_cache_root;
+		$del_cache_path = $ela_cache_root . "*.dat";
 		if ( ($filelist=glob($del_cache_path)) === false ) return false;
 		foreach ($filelist as $filename) {
 			if (!@unlink($filename)) return false;	// delete it

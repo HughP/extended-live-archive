@@ -434,13 +434,13 @@ function af_ela_get_requests(&$menu, &$year, &$month, &$category, &$tag, &$paged
 }
 
 function af_ela_get_tidy_settings(&$paged_post, &$path, &$settings,&$menu_headers,&$menu_table,&$fade,&$year, &$month, &$category, &$tag) {
-    global $af_ela_cache_root;
+    global $ela_cache_root, $ela_plugin_basename;
 	// number of post in current selection for pages
 	$paged_post = 0;
 
 	// the paths for the cache files and settings
-	$path = $af_ela_cache_root; 
-	if (!is_dir($path)) $path = get_settings('siteurl') . '/wp-content/plugins/af-extended-live-archive/cache/';
+	$path = $ela_cache_root; 
+	if (!is_dir($path)) $path = WP_PLUGIN_URL. '/' .$ela_plugin_basename .'/cache/';
 
 
 	// get settings and construct default;

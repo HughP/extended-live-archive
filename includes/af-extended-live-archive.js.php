@@ -1,6 +1,6 @@
 <?php 
 	require_once('../../../../wp-blog-header.php'); 
-	$plugin_path = get_settings('siteurl') . '/wp-content/plugins/af-extended-live-archive/includes/af-ela.php';
+	$plugin_path = WP_PLUGIN_URL . '/'. $ela_plugin_basename . '/includes/af-ela.php';
 	// get settings and construct default;
 	$settings = get_option('af_ela_options');
 	if (!$settings) {
