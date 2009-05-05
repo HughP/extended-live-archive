@@ -6,6 +6,7 @@
 */
 #af-ela ul {
 	padding: 0;
+    margin: 0;
 }
 #af-ela ul li {
 	list-style-type: none;

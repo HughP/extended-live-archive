@@ -23,18 +23,26 @@
 // +----------------------------------------------------------------------+
 */
 
-if (!defined('WP_PLUGIN_DIR')){
-    define('WP_PLUGIN_DIR', ABSPATH . 'wp-content/plugins');
-}
+if ( !defined('WP_CONTENT_URL') )
+	define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
+if ( !defined('WP_CONTENT_DIR') )
+	define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
 
-if (!defined('WP_PLUGIN_URL')){
-    define('WP_PLUGIN_URL',get_option('siteurl') . '/wp-content/plugins');
-}
+if ( !defined('WP_PLUGIN_URL') )
+	define( 'WP_PLUGIN_URL', WP_CONTENT_URL . '/plugins' );
+if ( !defined('WP_PLUGIN_DIR') )
+	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
 
-$af_ela_cache_root = dirname(__FILE__) . '/cache/';
+//the directory name of this plugin
+$ela_plugin_basename = plugin_basename(dirname(__FILE__));
+
+//the path name of cache directory
+$ela_cache_root = WP_PLUGIN_DIR . '/' . $ela_plugin_basename . '/cache/';
+
+//the debug flag, if true, will create a log file
 $debug = false;
 $utw_is_present = true;
-$ela_plugin_basename = plugin_basename(__FILE__);
+
 
 require_once(dirname(__FILE__)."/af-extended-live-archive-include.php");
 
@@ -42,7 +50,7 @@ require_once(dirname(__FILE__)."/af-extended-live-archive-include.php");
  * Main template function.
  **************************************/	 
 function af_ela_super_archive($arguments = '') {
-	global $wpdb, $af_ela_cache_root;
+	global $wpdb, $ela_cache_root,$ela_plugin_basename;
 	
 	$settings = get_option('af_ela_options');
 	$is_initialized = get_option('af_ela_is_initialized');
@@ -79,7 +87,7 @@ function af_ela_super_archive($arguments = '') {
 		ORDER BY post_date DESC LIMIT 1");
 	
 		
-	if( !is_dir($af_ela_cache_root) || !is_file($af_ela_cache_root.'years.dat')
+	if( !is_dir($ela_cache_root) || !is_file($ela_cache_root.'years.dat')
      || $num_posts != $options['num_posts'] || $last_post_id != $options['last_post_id'] ) {
 		$options['num_posts'] = $num_posts;
 		$options['last_post_id'] = $last_post_id;
@@ -97,7 +105,7 @@ function af_ela_super_archive($arguments = '') {
 	}
 	
 	$year = date('Y');
-	$plugin_path = WP_PLUGIN_URL . '/af-extended-live-archive';
+	$plugin_path = WP_PLUGIN_URL . '/' . $ela_plugin_basename;
 	
 
 	$text .= <<<TEXT
@@ -114,9 +122,10 @@ TEXT;
  * loading stuff in the header.
  **************************************/	
 function af_ela_header() {
+    global $ela_plugin_basename;
 	// loading stuff
 	$settings = get_option('af_ela_options');
-	$plugin_path = WP_PLUGIN_URL . '/af-extended-live-archive';
+	$plugin_path = WP_PLUGIN_URL . '/'. $ela_plugin_basename;
 	if ($settings['use_default_style']) {
 		if (file_exists(ABSPATH . 'wp-content/themes/' . get_template() . '/ela.css')) {
 			$csspath = get_bloginfo('template_url')."/ela.css";
@@ -194,15 +203,15 @@ function af_ela_post_change($id) {
 	return $id;
 }
 function af_ela_create_cache_dir(){
-    return mkdir($af_ela_cache_root);
+    return mkdir($ela_cache_root);
 }
 /***************************************
  * creation of the cache
  **************************************/	
 function af_ela_create_cache($settings) {
-	global $wpdb, $af_ela_cache_root;
+	global $wpdb, $ela_cache_root;
 
-	if( !is_dir($af_ela_cache_root) ) {
+	if( !is_dir($ela_cache_root) ) {
 		if(!af_ela_create_cache_dir()) return false;
 	}
 	
@@ -238,7 +247,7 @@ function af_ela_create_cache($settings) {
  * TODO  need to do some more checks 
  **************************************/
 function af_ela_set_config($config, $reset=false) {
-	global $wpdb, $af_ela_cache_root;
+	global $wpdb;
 
 	$settings = get_option('af_ela_options');
 	
