@@ -1,36 +1,15 @@
 <?php 
-	require_once('../../../../wp-blog-header.php'); 
-	$plugin_path = WP_PLUGIN_URL . '/'. $ela_plugin_basename . '/includes/af-ela.php';
-	// get settings and construct default;
-	$settings = get_option('af_ela_options');
-	if (!$settings) {
-		echo "document.write('<div id=\"af-ela\"><p class=\"alert\">Plugin is not initialized. Admin or blog owner, visit the ELA option panel in your admin section.</p></div>')";
-		return;
-	} else {
-	    header("Cache-Control: public");
-		header("Pragma: cache");
+header("Cache-Control: public");
+header("Pragma: cache");
 
-		$offset = 60*60*24*365;
-		$ExpStr = "Expires: ".gmdate("D, d M Y H:i:s",time() + $offset)." GMT";
-		$LmStr = "Last-Modified: ".$settings['last_modified']." GMT";
-		header($ExpStr);
-		header($LmStr);
-		header('Content-Type: text/javascript; charset: UTF-8');
+$offset = 60*60*24*365;
+$ExpStr = "Expires: ".gmdate("D, d M Y H:i:s",time() + $offset)." GMT";
 
-		// Getting headers sent by the client if possible.
-		if (function_exists('apache_request_headers')) {
-			$headers = apache_request_headers();
-			if (isset($headers['If-Modified-Since']) && ($headers['If-Modified-Since']) == ($settings['last_modified']." GMT")) {
-				header("HTTP/1.1 304 Not Modified");
-				exit;
-			}
-		} else if (isset($HTTP_IF_MODIFIED_SINCE)) {
-			if (($settings['last_modified']." GMT") == $HTTP_IF_MODIFIED_SINCE) {
-				header("HTTP/1.1 304 Not Modified");
-				exit;
-			}
-		}
-	}
+header($ExpStr);
+
+header('Content-Type: text/javascript; charset: UTF-8');
+
+	
 ?>/*
 // +----------------------------------------------------------------------+
 // | Licenses and copyright acknowledgements are located at               |
@@ -45,11 +24,7 @@ var af_elaCategory = -1;
 var af_elaTag = -1;
 var af_elaMenu = 0;
 var af_elaIsIE = false;
-var af_elaProcessURI = '<?php echo $plugin_path; ?>';
-var af_elaResultID = '<?php echo $settings['id']; ?>';
-var af_elaLoadingContent = '<?php echo $settings['loading_content']; ?>';
-var af_elaIdleContent = '<?php echo $settings['idle_content']; ?>';
-var af_elaPageOffset = '<?php echo $settings['paged_post_num']; ?>';
+
 var af_elaCurrentOffset = 0;
 var af_elaCurrentPage = 1;
 var af_elaSemOffset = 0;

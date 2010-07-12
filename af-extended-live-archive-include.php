@@ -43,7 +43,6 @@ function logthis($message,$function = __FUNCTION__ ,$line = __LINE__, $file = __
 class af_ela_classGenerator {
 	
 	var $cache;
-	var $utwCore;
 	var $yearTable = array();
 	var $monthTable = array();
 	var $catsTable = array();
@@ -66,7 +65,7 @@ class af_ela_classGenerator {
 	 * 		updated post.
 	 * ***********************************/	
 	function buildPostToGenerateTable($exclude, $id, $commentId = false) {
-		global $wpdb;//, $tabletags, $tablepost2tag, $utw_is_present;
+		global $wpdb;
 		
 		if (!empty($exclude)) {
 			$excats = preg_split('/[\s,]+/',$exclude);
@@ -105,26 +104,23 @@ class af_ela_classGenerator {
 			$this->postToGenerate['new_year']= $results[0]->year;
 			$this->postToGenerate['new_month']= $results[0]->month;
 			
-			// For UTW
-			if($utw_is_present) {
-                $query = "SELECT t.term_id AS `tag_id`
-                          FROM $wpdb->terms AS t
-                          INNER JOIN $wpdb->term_taxonomy AS tt
-                                ON (t.term_id = tt.term_id)
-                          INNER JOIN $wpdb->term_relationships AS tr
-                                ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
-                          WHERE tt.taxonomy = 'post_tag'
-                          $dojustid2
-                        ";
-				$results = $wpdb->get_results($query);
-                logthis("SQL Query :"."Result Count:" . count($results).$query, __FUNCTION__, __LINE__);
-				if ($results) {
-					foreach($results as $result) {
-						$this->postToGenerate['tag_id'][] = $result->tag_id;
-					}
-				}
-			}
-			// End of stuff for UTW
+
+            $query = "SELECT t.term_id AS `tag_id`
+                      FROM $wpdb->terms AS t
+                      INNER JOIN $wpdb->term_taxonomy AS tt
+                            ON (t.term_id = tt.term_id)
+                      INNER JOIN $wpdb->term_relationships AS tr
+                            ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+                      WHERE tt.taxonomy = 'post_tag'
+                      $dojustid2
+                    ";
+            $results = $wpdb->get_results($query);
+            logthis("SQL Query :"."Result Count:" . count($results).$query, __FUNCTION__, __LINE__);
+            if ($results) {
+                foreach($results as $result) {
+                    $this->postToGenerate['tag_id'][] = $result->tag_id;
+                }
+            }
 			
 			return true;
 		} else {
@@ -140,15 +136,22 @@ class af_ela_classGenerator {
 					$dojustid = ' AND ID = ' . intval($id) . ' ' ;
 				}
 
-				$query = "SELECT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, category_id
-					FROM $wpdb->posts 
-					INNER JOIN $wpdb->post2cat ON ($wpdb->posts.ID = $wpdb->post2cat.post_id)
-					WHERE post_date > 0
-					$exclusions $dojustid
-					ORDER By post_date DESC";
+				$query = "SELECT YEAR(post_date) AS `year`, 
+                                 MONTH(post_date) AS `month`,
+                                 tt.term_id AS `category_id`
+                          FROM $wpdb->posts
+                          INNER JOIN {$wpdb->term_relationships} AS tr
+                                     ON (ID = tr.object_id)
+                          INNER JOIN {$wpdb->term_taxonomy} AS tt
+                                     ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+                          WHERE tt.taxonomy = 'category'
+                          AND post_date > 0
+                          $exclusions $dojustid
+                          GROUP BY tr.object_id
+                          ORDER By post_date DESC";
 				
 				$results = $wpdb->get_results($query);
-                logthis("SQL Query :"."Result Count:" . count($results).$query, __FUNCTION__, __LINE__);
+                logthis("SQL Query :"."Result Count:" . count($results).$query ."\n". var_export($this->postToGenerate,true), __FUNCTION__, __LINE__);
 				if($results) {
 					foreach($results as $result) {
 						$this->postToGenerate['category_id'][]=$result->category_id;
@@ -294,6 +297,7 @@ class af_ela_classGenerator {
 		
 		$posts = array();
 		$now = current_time('mysql', 1);
+        //TODO 这里foreach有可能遍历空数组？？？怎么回事，调查原因
 		foreach( $this->yearTable as $year => $y ) {
 			$posts[$year] = array();
 			foreach( $this->monthTable[$year] as $month =>$m ) {
@@ -398,24 +402,13 @@ class af_ela_classGenerator {
             logthis("SQL Query : Categories: ".count($categories) . $query, __FUNCTION__, __LINE__);
 		}
 
-        /** TODO the following query can be removed
-         *  you can get cat_count directly from the term table
-         *  don't need to query again.
-         */
 		if (!count($category_posts)) {
 			$now = current_time('mysql', 1);	
-            $query = "SELECT t.term_id AS `cat_ID`, COUNT(distinct p.ID) AS cat_count
-                FROM $wpdb->terms AS t
-                INNER JOIN {$wpdb->term_taxonomy} AS tt
-                      ON (t.term_id = tt.term_id)
-                INNER JOIN {$wpdb->term_relationships} AS tr
-                      ON (tt.term_taxonomy_id = tr.term_taxonomy_id)
-                INNER JOIN {$wpdb->posts} AS p
-                      ON (p.ID = tr.object_id)
-				WHERE p.post_status = 'publish'
-				AND p.post_date_gmt < '$now' 
-				$exclusions 
-				GROUP BY t.term_id";
+
+            $query = "SELECT `term_id` AS `cat_ID`, `count` AS `cat_count`
+                      FROM {$wpdb->term_taxonomy} AS t
+                      WHERE `taxonomy` = 'category'
+                      $exclusions";
 
 			
 			$cat_counts = $wpdb->get_results($query);
@@ -470,6 +463,7 @@ class af_ela_classGenerator {
 		}
 		$now = current_time('mysql', 1);
 		logthis($this->catsTable);
+        //TODO 这里foreach也可能遍历空对象，调查原因
 		foreach( $this->catsTable as $category ) {
 			$posts_in_cat[$category[0]] = array();
             $query = "SELECT p.ID AS `post_id`
@@ -487,23 +481,27 @@ class af_ela_classGenerator {
             logthis("SQL Query :Posts in Cat:" . count($posts_in_cat_results) .$query, __FUNCTION__, __LINE__);
 			if( $posts_in_cat_results ) {
 				$posts_in_cat_results = array_reverse($posts_in_cat_results);
-				foreach( $posts_in_cat_results as $post_in_cat_result ) {
-					
-					$query = "SELECT ID, post_title, post_date as `day`, comment_status, comment_count
-						FROM $wpdb->posts 
-						WHERE ID = $post_in_cat_result->post_id 
-						AND post_status = 'publish' 
-						AND post_date_gmt <= '$now'
-						ORDER By post_date";
-					
-					$post_results = $wpdb->get_results($query);
-                    logthis("SQL Query :Post Results". count($post_results) .$query, __FUNCTION__, __LINE__);
-					if( $post_results ) {
-						foreach( $post_results as $post_result ) {
-							$this->postsInCatsTable[$category[0]][$post_result->ID] = array($post_result->day, $post_result->post_title, get_permalink($post_result->ID), $post_result->comment_count, $post_result->comment_status);
-						}
-					}
+				$post_id_set = array();
+                foreach( $posts_in_cat_results as $post_in_cat_result ) {
+					$post_id_set[] = $post_in_cat_result->post_id;
 				}
+                $post_id_set = '(' . implode(',', $post_id_set) . ')';
+
+                $query = "SELECT ID, post_title, post_date as `day`, comment_status, comment_count
+                    FROM $wpdb->posts
+                    WHERE ID IN $post_id_set
+                    AND post_status = 'publish'
+                    AND post_date_gmt <= '$now'
+                    ORDER By post_date";
+
+                $post_results = $wpdb->get_results($query);
+                logthis("SQL Query :Post Results". count($post_results) .$query, __FUNCTION__, __LINE__);
+                if( $post_results ) {
+                    foreach( $post_results as $post_result ) {
+                        $this->postsInCatsTable[$category[0]][$post_result->ID] = array($post_result->day, $post_result->post_title, get_permalink($post_result->ID), $post_result->comment_count, $post_result->comment_status);
+                    }
+                }
+
 				if ($this->postsInCatsTable[$category[0]]) {
 					$this->cache->contentIs($this->postsInCatsTable[$category[0]]);
 					$this->cache->writeFile('cat-' . $category[0] . '.dat');
@@ -591,7 +589,7 @@ class af_ela_classGenerator {
 	 * ***********************************/	
 	function buildPostsInTagsTable($exclude='',$hide_ping_and_track) {
 		
-			global $wpdb, $tabletags, $tablepost2tag;
+			global $wpdb;//, $tabletags, $tablepost2tag;
 			
 			if( 1 == $hide_ping_and_track ) {
 				$ping = "AND comment_type NOT LIKE '%pingback%' AND comment_type NOT LIKE '%trackback%'";
@@ -619,6 +617,7 @@ class af_ela_classGenerator {
                           INNER JOIN $wpdb->term_taxonomy AS tt
                                 ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
                           WHERE tt.term_id = $tag[0]
+                          AND tt.taxonomy = 'post_tag'
                           AND post_status = 'publish'
                           AND post_date_gmt <= '$now'
                           $exclusions
@@ -627,14 +626,10 @@ class af_ela_classGenerator {
 
 				$posts_in_tag_results = $wpdb->get_results($query);
 				logthis("SQL Query :Posts in Tag: ". count($posts_in_tag_results) .$query, __FUNCTION__, __LINE__);
-//                logthis(var_export($posts_in_tag_results, true));
 				if( $posts_in_tag_results ) {
 
 					foreach( $posts_in_tag_results as $post_result ) {
-//                                logthis(var_export($post_result,true));
 								$this->postsInTagsTable[$tag[0]][$post_result->ID] = array($post_result->day, $post_result->post_title, get_permalink($post_result->ID), $post_result->comment_count, $post_result->comment_status);
-//                                logthis(var_export($this->postsInTagsTable[$tag[0]],true));
-
 					}
 					if ($this->postsInTagsTable[$tag[0]]) {
 						$this->cache->contentIs($this->postsInTagsTable[$tag[0]]);
