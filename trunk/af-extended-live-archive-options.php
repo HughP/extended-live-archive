@@ -6,16 +6,14 @@
 // +----------------------------------------------------------------------+
 */
 
-include_once(ABSPATH . WPINC . '/class-snoopy.php');
- 
 $af_ela_cache_root = dirname(__FILE__) . '/cache/';
 
 function af_ela_info($show='') {
-    global $ela_plugin_basename;
+    global $ela_plugin_pathname;
 	switch($show) {
 	case 'currentversion' :
 		$plugins= get_plugins();
-    	$info = $plugins[$ela_plugin_basename]['Version'];
+    	$info = $plugins[$ela_plugin_pathname]['Version'];
         break;
     case 'localeversion' :
     	$info = '9918';
@@ -246,31 +244,8 @@ function af_ela_option_update() {
 	
 }
 
-function af_ela_remote_version_check() {
-	if (class_exists(snoopy)) {
-		$client = new Snoopy();
-		$client->_fp_timeout = 4;
-		if (@$client->fetch(af_ela_info('remoteversion')) === false) {
-			return -1;
-		}
-	   	$remote = $client->results;
-   		if (!$remote || strlen($remote) > 8 ) {
-			return -1;
-		} 
-		if (intval($remote) > intval(af_ela_info('localeversion'))) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-}
-
 function af_ela_admin_page() {
 	af_ela_option_init();
-    $remote = af_ela_remote_version_check();
-	if ($remote == 1) {
-		echo '<div id="message" class="updated fade"><p><a href="'. af_ela_info('homeurl').'" title="'.af_ela_info('homename').'">'.__('There is a ELA update available','ela'). '</a></p></div>';
-	}
 	
 	if (isset($_POST['ela_submit_option'])) {
 		if (isset($_POST['ela_clear_cache'])) {
@@ -312,35 +287,41 @@ function af_ela_admin_page() {
 
 	af_ela_echo_scripts();
 
-?>	<div class="wrap">
-		<h2>ELA Options</h2><?php
-	af_ela_echo_fieldset_info($option_mode_text,$advancedState);
-?>		<form method="post">
-		<input type="hidden" name="ela_submit_option" value="1" /><?php
-	af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode);
-?>		<hr style="clear: both; border: none;" /><?php
-	af_ela_echo_fieldset_howtoshow($settings,$advancedState);
-	af_ela_echo_fieldset_howtocut($settings,$advancedState);
-?>		<hr style="clear: both; border: none;" /><?php
-	af_ela_echo_fieldset_whataboutthemenus($settings,$advancedState);
-	af_ela_echo_fieldset_whatcategoriestoshow($settings,$advancedState);
-	af_ela_echo_fieldset_whataboutthepagedposts($settings,$advancedState);
-?>		<hr style="clear: both; border: none;" />
-		<div class="submit">
-			<input type="submit" name="update_generic" value="<?php _e('Update Options Now') ?>" />
-		</div>
-		</form>
-	</div>
-	<div class="wrap">
-		<h2><?php _e('ELA Cache Management','ela');?></h2>
-		<form method="post">
+?>
+<div class="wrap">
+	<h2>ELA Options</h2>
+    <?php af_ela_echo_fieldset_info($option_mode_text,$advancedState);?>
+    <form method="post">
 		<input type="hidden" name="ela_submit_option" value="1" />
-		<p><?php _e('You need to clear the cache so that it gets re-built whenever you are making changes related to a category without editing or creating a post (like renaming, creating, deleting a category for instance','ela');?></p>
-		<div class="submit">
-			<input type="submit" name="ela_clear_cache" value="<?php _e('Empty Cache Now') ?>" />
-		</div>
-		</form>
-	</div>
+    <?php
+        af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode);
+    ?>
+        <hr style="clear: both; border: none;" />
+    <?php
+        af_ela_echo_fieldset_howtoshow($settings,$advancedState);
+        af_ela_echo_fieldset_howtocut($settings,$advancedState);
+    ?>
+        <hr style="clear: both; border: none;" />
+    <?php
+        af_ela_echo_fieldset_whataboutthemenus($settings,$advancedState);
+        af_ela_echo_fieldset_whatcategoriestoshow($settings,$advancedState);
+        af_ela_echo_fieldset_whataboutthepagedposts($settings,$advancedState);
+    ?>
+        <hr style="clear: both; border: none;" />
+		<p class="submit">
+			<input type="submit" name="update_generic" value="<?php _e('Update Options Now','ela');?>" class="button-primary" />
+		</p>
+	</form>
+    <hr style="clear: both; border: none;" />
+    <h2><?php _e('ELA Cache Management','ela');?></h2>
+    <form method="post">
+        <input type="hidden" name="ela_submit_option" value="1" />
+        <p><?php _e('You need to clear the cache so that it gets re-built whenever you are making changes related to a category without editing or creating a post (like renaming, creating, deleting a category for instance','ela');?></p>
+        <p class="submit">
+            <input type="submit" name="ela_clear_cache" value="<?php _e('Empty Cache Now','ela') ?>" class="button-primary"/>
+        </p>
+    </form>
+</div>
 <?php
 }
 
@@ -418,7 +399,8 @@ function af_ela_echo_scripts() {
 
 function af_ela_echo_fieldset_info($option_mode_text,$advancedState) {
 ?>
-		<fieldset class="options" style="float: left; width: 25%;"><legend><?php _e('Extended Live Archive info','ela');?> </legend>
+    <fieldset class="options" style="float: left; width: 25%;">
+        <legend><?php _e('Extended Live Archive info','ela');?> </legend>
 		<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 			<tr>
 				<th width="33%" valign="top" scope="row"><label><?php _e('Version:','ela');?></label></th>
@@ -450,11 +432,15 @@ function af_ela_echo_fieldset_info($option_mode_text,$advancedState) {
 		</table> 
 		<div class="submit" style="text-align:center; ">
 		<form method="post"><br />
-		<input type="hidden" name="ela_submit_option" value="1" /><input type="submit" name="switch_option_mode" value="<?php _e($option_mode_text) ?>" /></form></div>
+		<input type="hidden" name="ela_submit_option" value="1" />
+        <input type="submit" name="switch_option_mode" value="<?php _e($option_mode_text) ?>" />
+        </form></div>
 		
 		<div class="submit" style="text-align:center;display: <?php echo $advancedState; ?> ">
 		<form method="post"><br />
-		<input type="hidden" name="ela_submit_option" value="1" /><input type="submit" name="reset_option" value="<?php echo "Reset options to default" ?>" /></form></div>
+		<input type="hidden" name="ela_submit_option" value="1" />
+        <input type="submit" name="reset_option" value="<?php echo "Reset options to default" ?>" />
+        </form></div>
 		<tr valign="top" >
 
 		</tr>
@@ -539,7 +525,8 @@ function af_ela_echo_fieldset_whattoshow($settings,$basicState, $current_mode) {
 //				foreach ($asides_cats as $cat) {
 //					echo '<option value="' . $cat->cat_ID . '">' . $cat->cat_name . '</option>';
 //            	}?>
-				</select><small><?php _e('&nbsp;&nbsp;&nbsp;The category you are using for your asides.','ela');?></small></td><?php } ?>
+				</select><small><?php _e('&nbsp;&nbsp;&nbsp;The category you are using for your asides.','ela');?></small></td>
+                <?php } ?>
 			</tr>		
 		</table>
 		</fieldset><?php

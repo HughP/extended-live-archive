@@ -1,9 +1,9 @@
 <?php 
 /* 
- Plugin Name: Better ELA
+ Plugin Name: Better Extended Live Archives
  Plugin URI: http://extended-live-archive.googlecode.com/
- Description: The famous ELA for WP 2.7.
- Version: 0.10
+ Description: The famous ELA for WP 2.7+. It's work for WP 3.0.
+ Version: 0.70
  Author: Charles
  Author URI: http://sexywp.com
  */
@@ -22,7 +22,7 @@
 // | http://www.sonsofskadi.net/wp-content/elalicenses.txt                |
 // +----------------------------------------------------------------------+
 */
-
+$ela_js_version = "0.50";
 if ( !defined('WP_CONTENT_URL') )
 	define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
 if ( !defined('WP_CONTENT_DIR') )
@@ -34,13 +34,14 @@ if ( !defined('WP_PLUGIN_DIR') )
 	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
 
 //the directory name of this plugin
+$ela_plugin_pathname = plugin_basename(__FILE__);
 $ela_plugin_basename = plugin_basename(dirname(__FILE__));
 
 //the path name of cache directory
 $ela_cache_root = WP_PLUGIN_DIR . '/' . $ela_plugin_basename . '/cache/';
 
 //the debug flag, if true, will create a log file
-$debug = false;
+$debug = true;
 $utw_is_present = true;
 
 
@@ -106,16 +107,28 @@ function af_ela_super_archive($arguments = '') {
 	
 	$year = date('Y');
 	$plugin_path = WP_PLUGIN_URL . '/' . $ela_plugin_basename;
-	
-
+	global $ela_js_version;
+    $process_uri = $plugin_path . '/includes/af-ela.php';
+    if (!settings){
+        echo '<script type="text/javascript">';
+        echo "document.write('<div id=\"af-ela\"><p class=\"alert\">Plugin is not initialized. Admin or blog owner, visit the ELA option panel in your admin section.</p></div>')";
+        echo '</script>';
+    }else{
 	$text .= <<<TEXT
-
-<script src="$plugin_path/includes/af-extended-live-archive.js.php" type="text/javascript"></script>
+<script type="text/javascript">
+var af_elaProcessURI = '${process_uri}';
+var af_elaResultID = '${settings['id']}';
+var af_elaLoadingContent = '${settings['loading_content']}';
+var af_elaIdleContent = '${settings['idle_content']}';
+var af_elaPageOffset = '${settings['paged_post_num']}';
+</script>
+<script src="$plugin_path/includes/af-extended-live-archive.js.php?v=${ela_js_version}" type="text/javascript"></script>
 <div id="${settings['id']}"></div>
 
 TEXT;
 
 	echo $text;
+    }
 }
 
 /***************************************
@@ -300,6 +313,14 @@ function af_ela_admin_pages() {
 }
 
 
+function af_ela_shorcode(){
+    ob_start();
+    af_ela_super_archive();
+    $ela = ob_get_contents();
+    ob_end_clean();
+    return $ela;
+}
+
 // insert javascript in headers
 add_action('wp_head', 'af_ela_header');
 // make sure the cache is rebuilt when post changes
@@ -311,5 +332,5 @@ add_action('trackback_post', 'af_ela_comment_change');
 add_action('pingback_post', 'af_ela_comment_change');
 add_action('delete_comment', 'af_ela_comment_change');
 add_action('admin_menu', 'af_ela_admin_pages');
-
+add_shortcode('extended-live-archive', 'af_ela_shorcode');
 ?>
