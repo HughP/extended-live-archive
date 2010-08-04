@@ -198,9 +198,9 @@ function af_ela_post_change($id) {
 		$idTags = false;
 	}
 	
-	$generator->buildYearsTable($settings['excluded_categories'], $id);
+	$generator->build_years_table($id);
 	
-	$generator->buildMonthsTable($settings['excluded_categories'], $id);
+	$generator->build_months_table($id);
 	
 	$generator->buildPostsInMonthsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks'], $id);
 		
@@ -238,9 +238,9 @@ function af_ela_create_cache($settings) {
 
     $generator->find_exclude_posts(array('excluded_categories' => $settings['excluded_categories'], 'show_page' => false));
 	
-	$generator->buildYearsTable($settings['excluded_categories']);
+	$generator->build_years_table();
 
-	$generator->buildMonthsTable($settings['excluded_categories']);
+	$generator->build_months_table();
 
 	$generator->buildPostsInMonthsTable($settings['excluded_categories'], $settings['hide_pingbacks_and_trackbacks']);
 
